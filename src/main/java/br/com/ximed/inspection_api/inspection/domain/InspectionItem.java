@@ -4,6 +4,8 @@ import br.com.ximed.inspection_api.inspection.domain.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.hibernate.annotations.BatchSize;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,9 +67,6 @@ public class InspectionItem {
     @Column(name = "nr_item")
     private String nrItem;
 
-    @Column(name = "observation", columnDefinition = "TEXT")
-    private String observation;
-
     @Column(name = "corrective_measure", columnDefinition = "TEXT")
     private String correctiveMeasure;
 
@@ -83,9 +82,11 @@ public class InspectionItem {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @BatchSize(size = 25)
     @Builder.Default
     @OneToMany(mappedBy = "inspectionItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evidence> evidences = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {
