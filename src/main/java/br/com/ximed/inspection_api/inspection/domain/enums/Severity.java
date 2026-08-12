@@ -5,15 +5,17 @@ import lombok.Getter;
 @Getter
 public enum Severity {
 
-    LOW(1),
-    MODERATE(2),
-    SERIOUS(3),
-    CRITICAL(4);
+    INSIGNIFICANT(1, "Insignificante"),
+    MINOR(2, "Menor"),
+    MODERATE(3, "Moderada"),
+    MAJOR(4, "Maior"),
+    CATASTROPHIC(5, "Catastrófica");
 
     private final int value;
+    private final String description;
 
-    Severity(int value) {
+    Severity(int value, String description) {
         this.value = value;
+        this.description = description;
     }
-
 }

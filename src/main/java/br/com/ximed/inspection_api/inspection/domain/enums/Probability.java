@@ -5,13 +5,17 @@ import lombok.Getter;
 @Getter
 public enum Probability {
 
-    LOW(1),
-    MEDIUM(2),
-    HIGH(3);
+    RARE(1, "Rara"),
+    UNLIKELY(2, "Improvável"),
+    POSSIBLE(3, "Possível"),
+    PROBABLE(4, "Provável"),
+    FREQUENT(5, "Frequente");
 
     private final int value;
+    private final String description;
 
-    Probability(int value) {
+    Probability(int value, String description) {
         this.value = value;
+        this.description = description;
     }
 }
