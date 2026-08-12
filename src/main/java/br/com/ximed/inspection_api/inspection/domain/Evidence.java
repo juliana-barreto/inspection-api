@@ -25,6 +25,9 @@ public class Evidence {
     @JoinColumn(name = "inspection_item_id", nullable = false)
     private InspectionItem inspectionItem;
 
+    @Column(name = "img_url", nullable = false)
+    private String imgUrl;
+
     @Column(name = "object_key", nullable = false)
     private String objectKey;
 
