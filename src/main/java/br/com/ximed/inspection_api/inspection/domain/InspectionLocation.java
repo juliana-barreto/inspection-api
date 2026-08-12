@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class InspectionArea {
+public class InspectionLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,11 +34,11 @@ public class InspectionArea {
     @JoinColumn(name = "sector_id", nullable = false)
     private Sector sector;
 
-    @Column(name = "location_name", nullable = false)
-    private String locationName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "sublocation_name", nullable = false)
-    private String sublocationName;
+    @Column(name = "sublocation", nullable = false)
+    private String sublocation;
 
     @Column(name = "environment_description", columnDefinition = "TEXT")
     private String environmentDescription;
@@ -64,7 +64,7 @@ public class InspectionArea {
     @BatchSize(size = 25)
     @Builder.Default
     @OneToMany(mappedBy = "inspectionArea", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InspectionItem> items = new ArrayList<>();
+    private List<InspectionFinding> items = new ArrayList<>();
 
 
     @PrePersist

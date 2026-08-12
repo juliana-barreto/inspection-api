@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 @Schema(description = "Dados para adicionar uma área ou ambiente inspecionado")
-public record InspectionAreaRequest(
+public record InspectionLocationRequest(
 
         @Schema(description = "ID do setor correspondente")
         @NotNull
@@ -18,12 +18,12 @@ public record InspectionAreaRequest(
         @Schema(description = "Nome da localização ou área inspecionada", example = "Área administrativa do RH")
         @NotBlank
         @Size(max = 255, message = "Localização deve ter no máximo 255 caracteres")
-        String locationName,
+        String name,
 
         @Schema(description = "Sublocalização ou ambiente específico", example = "Sala de reuniões")
         @NotBlank
         @Size(max = 255, message = "Sublocalização deve ter no máximo 255 caracteres")
-        String sublocationName,
+        String sublocation,
 
         @Schema(description = "Descrição detalhada do ambiente", example = "Local com boa iluminação e ventilação")
         @Size(max = 1000, message = "Descrição do ambiente deve ter no máximo 1000 caracteres")

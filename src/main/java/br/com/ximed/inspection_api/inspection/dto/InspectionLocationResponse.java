@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "Dados de uma área ou ambiente inspecionado")
-public record InspectionAreaResponse(
+public record InspectionLocationResponse(
         @Schema(description = "ID único da área inspecionada")
         UUID id,
 
@@ -14,13 +14,13 @@ public record InspectionAreaResponse(
         UUID sectorId,
 
         @Schema(description = "Nome do setor vinculado", example = "Recursos Humanos")
-        String sectorName,
+        String sector,
 
         @Schema(description = "Nome da localização inspecionada", example = "Sala administrativa do RH")
-        String locationName,
+        String name,
 
         @Schema(description = "Sublocalização ou ambiente específico", example = "Sala de reuniões")
-        String sublocationName,
+        String sublocation,
 
         @Schema(description = "Descrição do ambiente de trabalho", example = "Ambiente bem iluminado com ventilação natural")
         String environmentDescription,
@@ -38,6 +38,6 @@ public record InspectionAreaResponse(
         Integer visitOrder,
 
         @Schema(description = "Lista de itens inspecionados nesta área")
-        List<InspectionItemResponse> items
+        List<InspectionFindingResponse> items
 ) {
 }
