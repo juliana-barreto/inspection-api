@@ -7,11 +7,11 @@ API RESTful para gestão e realização de inspeções de segurança e conformid
 ```mermaid
 erDiagram
 
-    COMPANY ||--o{ ESTABLISHMENT : possui
-    ESTABLISHMENT ||--o{ UNIT : possui
+    COMPANY ||--o{ SITE : possui
+    SITE ||--o{ SECTOR : possui
 
-    ESTABLISHMENT ||--o{ INSPECTION : recebe
-    UNIT ||--o{ INSPECTION_AREA : agrupa
+    SITE ||--o{ INSPECTION : recebe
+    SECTOR ||--o{ INSPECTION_AREA : agrupa
 
     INSPECTION ||--o{ INSPECTION_AREA : possui
     INSPECTION_AREA ||--o{ INSPECTION_ITEM : possui
@@ -22,36 +22,31 @@ erDiagram
         uuid id PK
         varchar corporate_name
         varchar trade_name
-        timestamp created_at
-        timestamp updated_at
     }
 
-    ESTABLISHMENT {
+    SITE {
         uuid id PK
         uuid company_id FK
         varchar name
         varchar cnpj
         varchar cnae
         varchar address
-        timestamp created_at
-        timestamp updated_at
     }
 
-    UNIT {
+    SECTOR {
         uuid id PK
-        uuid establishment_id FK
+        uuid site_id FK
         varchar name
         text description
-        timestamp created_at
-        timestamp updated_at
     }
 
     INSPECTION {
         uuid id PK
-        uuid establishment_id FK
+        uuid site_id FK
 
         varchar identification
         text objective
+        boolean is_multisectoral
 
         varchar inspector_name
         varchar inspector_job_title
@@ -59,10 +54,7 @@ erDiagram
 
         timestamp started_at
         timestamp ended_at
-
         varchar status
-        text conclusion
-        date next_inspection_date
 
         timestamp created_at
         timestamp updated_at
@@ -71,7 +63,7 @@ erDiagram
     INSPECTION_AREA {
         uuid id PK
         uuid inspection_id FK
-        uuid unit_id FK
+        uuid sector_id FK
 
         varchar location_name
         varchar sublocation_name
@@ -111,7 +103,6 @@ erDiagram
         text corrective_measure
         varchar responsible_name
         date deadline
-        varchar action_status
 
         timestamp created_at
         timestamp updated_at
