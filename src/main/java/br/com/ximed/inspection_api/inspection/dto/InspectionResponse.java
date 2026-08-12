@@ -42,8 +42,8 @@ public record InspectionResponse(
         @Schema(description = "Nome do estabelecimento/filial inspecionado", example = "Sede/Del Castilho")
         String siteName,
 
-        @Schema(description = "Lista de áreas inspecionadas")
-        List<InspectionAreaResponse> areas,
+        @Schema(description = "Lista de localizações inspecionadas")
+        List<InspectionLocationResponse> locations,
 
         @Schema(description = "Data de criação do registro", example = "2026-08-12T08:00:00")
         LocalDateTime createdAt,

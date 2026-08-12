@@ -1,6 +1,6 @@
 package br.com.ximed.inspection_api.company;
 
-import br.com.ximed.inspection_api.inspection.domain.InspectionArea;
+import br.com.ximed.inspection_api.inspection.domain.InspectionLocation;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ public class Sector {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    // Não deve ser removido em cascata, pois a exclusão de um setor não deve excluir as áreas de inspeção associadas.
+    // Não deve ser removido em cascata, pois a exclusão de um setor não deve excluir as localizações de inspeção associadas.
     @Builder.Default
     @OneToMany(mappedBy = "sector")
-    private List<InspectionArea> inspectionAreas = new ArrayList<>();
+    private List<InspectionLocation> inspectionLocations = new ArrayList<>();
 }

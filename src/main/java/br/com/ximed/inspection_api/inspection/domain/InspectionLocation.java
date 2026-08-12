@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "inspection_areas")
+@Table(name = "inspection_locations")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -63,9 +63,8 @@ public class InspectionLocation {
 
     @BatchSize(size = 25)
     @Builder.Default
-    @OneToMany(mappedBy = "inspectionArea", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InspectionFinding> items = new ArrayList<>();
-
+    @OneToMany(mappedBy = "inspectionLocation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InspectionItem> items = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

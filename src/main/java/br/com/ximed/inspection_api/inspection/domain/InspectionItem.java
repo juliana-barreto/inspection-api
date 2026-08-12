@@ -28,8 +28,8 @@ public class InspectionItem {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inspection_area_id", nullable = false)
-    private InspectionArea inspectionArea;
+    @JoinColumn(name = "inspection_location_id", nullable = false)
+    private InspectionLocation inspectionLocation;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "situation", nullable = false)

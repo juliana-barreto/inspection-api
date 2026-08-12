@@ -61,7 +61,7 @@ public class Inspection {
 
     @Builder.Default
     @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InspectionArea> inspectionAreas = new ArrayList<>();
+    private List<InspectionLocation> inspectionLocations = new ArrayList<>();
 
 
     @PrePersist

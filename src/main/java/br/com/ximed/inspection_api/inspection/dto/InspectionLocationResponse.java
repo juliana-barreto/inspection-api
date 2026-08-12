@@ -38,6 +38,6 @@ public record InspectionLocationResponse(
         Integer visitOrder,
 
         @Schema(description = "Lista de itens inspecionados nesta área")
-        List<InspectionFindingResponse> items
+        List<InspectionItemResponse> items
 ) {
 }
