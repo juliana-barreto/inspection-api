@@ -36,10 +36,8 @@ public class CompanyController {
     }
 
     @GetMapping("/sites/{siteId}/sectors")
-    @Operation (summary = "Consulta os setores cadastrados de um local")
-    public ResponseEntity<List<SectorResponse>> getSectors(
-            @PathVariable UUID siteId
-    ) {
+    @Operation (summary = "Consulta os setores cadastrados de uma filial")
+    public ResponseEntity<List<SectorResponse>> getSectors(@PathVariable UUID siteId) {
         return ResponseEntity.ok(companyService.getSectors(siteId));
     }
 }
