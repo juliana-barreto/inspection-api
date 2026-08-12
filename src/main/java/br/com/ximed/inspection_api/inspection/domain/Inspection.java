@@ -4,7 +4,6 @@ import br.com.ximed.inspection_api.company.Site;
 import br.com.ximed.inspection_api.inspection.domain.enums.InspectionStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +27,6 @@ public class Inspection {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;
-
-    @Column(name = "identification")
-    private String identification;
 
     @Column(name = "objective", columnDefinition = "TEXT")
     private String objective;
@@ -66,6 +62,7 @@ public class Inspection {
     @Builder.Default
     @OneToMany(mappedBy = "inspection", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InspectionArea> inspectionAreas = new ArrayList<>();
+
 
     @PrePersist
     protected void onCreate() {
