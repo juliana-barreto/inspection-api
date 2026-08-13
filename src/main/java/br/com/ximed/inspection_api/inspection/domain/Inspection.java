@@ -24,6 +24,9 @@ public class Inspection {
     @EqualsAndHashCode.Include
     private UUID id;
 
+    @Column(name = "code", unique = true, nullable = false)
+    private String code;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;

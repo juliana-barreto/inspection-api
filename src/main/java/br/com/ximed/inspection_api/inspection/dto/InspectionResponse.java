@@ -12,6 +12,9 @@ public record InspectionResponse(
         @Schema(description = "ID único da inspeção")
         UUID id,
 
+        @Schema(description = "Código de identificação do relatório", example = "INS-2026-001")
+        String code,
+
         @Schema(description = "Objetivo principal da inspeção", example = "Inspeção periódica de segurança do trabalho")
         String objective,
 
