@@ -37,6 +37,8 @@ public class InspectionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Local não encontrado"));
 
         Inspection inspection = inspectionMapper.toEntity(request, site);
+        inspection.setCode(generateNextCode());
+        inspection.setStatus(InspectionStatus.IN_PROGRESS);
         inspectionRepository.save(inspection);
 
         return inspectionMapper.toResponse(inspection);
@@ -106,6 +108,23 @@ public class InspectionService {
         return inspectionMapper.toResponse(inspection);
     }
 
+    @Transactional
+    public InspectionResponse pause(UUID id) {
+        Inspection inspection = inspectionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Inspeção não encontrada"));
+
+        inspection.setStatus(InspectionStatus.PAUSED);
+        inspectionRepository.save(inspection);
+
+        return inspectionMapper.toResponse(inspection);
+    }
+
+    private String generateNextCode() {
+        int year = java.time.Year.now().getValue();
+        long nextSeq = inspectionRepository.count() + 1;
+        return String.format("INS-%d-%03d", year, nextSeq);
+    }
+
     private RiskLevel calculateRiskLevel(Probability probability, Severity severity) {
         if (probability == null || severity == null) {
             return null;
@@ -113,5 +132,4 @@ public class InspectionService {
         int score = probability.getValue() * severity.getValue();
         return RiskLevel.fromScore(score);
     }
-
 }
