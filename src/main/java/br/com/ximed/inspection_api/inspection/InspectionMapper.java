@@ -31,6 +31,7 @@ public class InspectionMapper {
 
         return new InspectionResponse(
                 inspection.getId(),
+                inspection.getCode(),
                 inspection.getObjective(),
                 inspection.isMultisectoral(),
 
