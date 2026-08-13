@@ -82,4 +82,10 @@ public class InspectionController {
     public ResponseEntity<InspectionResponse> submit(@PathVariable UUID id) {
         return ResponseEntity.ok(inspectionService.submitForApproval(id));
     }
+
+    @PatchMapping("/{id}/pause")
+    @Operation(summary = "Pausar relatório de inspeção")
+    public ResponseEntity<InspectionResponse> pause(@PathVariable UUID id) {
+        return ResponseEntity.ok(inspectionService.pause(id));
+    }
 }
