@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
-        @Query("""
+    @Query("""
             SELECT DISTINCT i
             FROM Inspection i
             LEFT JOIN FETCH i.site
