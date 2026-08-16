@@ -9,6 +9,9 @@ public record SiteResponse(
         @Schema(description = "ID único do estabelecimento")
         UUID id,
 
+        @Schema(description = "ID da empresa")
+        UUID companyId,
+
         @Schema(description = "Nome do estabelecimento/filial", example = "Sede/Del Castilho")
         String name,
 

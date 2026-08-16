@@ -9,9 +9,9 @@ public record SectorResponse(
         @Schema(description = "ID único do setor")
         UUID id,
 
-        @Schema(description = "Nome do setor", example = "Escritório de RH")
-        String name,
+        @Schema(description = "ID da filial/estabelecimento")
+        UUID siteId,
 
-        @Schema(description = "Descrição do setor", example = "Setor administrativo")
-        String description
+        @Schema(description = "Nome do setor", example = "Escritório de RH")
+        String name
 ) {}
