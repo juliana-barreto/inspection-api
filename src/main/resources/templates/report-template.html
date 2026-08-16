@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Relatório de Inspeção</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; }
+        .header { text-align: center; border-bottom: 2px solid #0056b3; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h1 { color: #0056b3; margin: 0; font-size: 24px; }
+        .header h2 { color: #555; margin: 5px 0 0 0; font-size: 18px; }
+        
+        .info-section { margin-bottom: 20px; }
+        .info-section h3 { background-color: #e9ecef; padding: 8px 10px; border-left: 5px solid #0056b3; margin-top: 0; font-size: 16px; }
+        
+        .info-grid { display: table; width: 100%; font-size: 14px; margin-bottom: 10px; }
+        .info-row { display: table-row; }
+        .info-cell { display: table-cell; padding: 5px; }
+        .info-cell.label { font-weight: bold; width: 20%; color: #444; }
+        .info-cell.value { width: 30%; }
+        
+        .list-group { margin: 0; padding: 0 0 0 20px; font-size: 14px; }
+        
+        .sector-block { margin-top: 30px; }
+        .sector-title { font-size: 18px; font-weight: bold; color: #fff; background-color: #0056b3; padding: 10px; border-radius: 4px; margin-bottom: 15px; page-break-after: avoid; }
+        
+        .location-block { margin-top: 15px; border: 1px solid #ced4da; padding: 15px; page-break-inside: avoid; border-radius: 4px; margin-bottom: 15px; }
+        .location-header { font-size: 15px; font-weight: bold; color: #0056b3; margin-bottom: 10px; border-bottom: 1px solid #ced4da; padding-bottom: 5px; }
+        
+        .item-block { margin-top: 15px; border-top: 1px dashed #adb5bd; padding-top: 15px; }
+        .item-title { font-weight: bold; color: #0056b3; font-size: 14px; margin-bottom: 5px; }
+        
+        .field-row { margin-bottom: 3px; font-size: 13px; }
+        .field-label { font-weight: bold; color: #555; }
+        
+        .evidence-grid { margin-top: 15px; text-align: center; }
+        .evidence-img { max-width: 250px; max-height: 250px; border: 1px solid #ccc; padding: 3px; margin: 5px; }
+        
+        .status-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: bold; color: white; }
+        .status-CONFORMING { background-color: #28a745; }
+        .status-NON_CONFORMING { background-color: #dc3545; }
+        .status-NOT_APPLICABLE { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 th:text="${inspection.site.company.corporateName}">Empresa</h1>
+        <h2 th:text="${inspection.site.company.tradeName != null ? inspection.site.company.tradeName : ''}"></h2>
+        <p>Relatório de Inspeção Técnica | Código: <span th:text="${inspection.code}"></span> | Data: <span th:text="${#temporals.format(inspection.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+    </div>
+
+    <div class="info-section">
+        <h3>Identificação do Local</h3>
+        <div class="info-grid">
+            <div class="info-row">
+                <div class="info-cell label">Filial (Site):</div>
+                <div class="info-cell value" th:text="${inspection.site.name}"></div>
+                <div class="info-cell label">CNPJ:</div>
+                <div class="info-cell value" th:text="${inspection.site.cnpj}"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-cell label">CNAE:</div>
+                <div class="info-cell value" th:text="${inspection.site.cnae}"></div>
+                <div class="info-cell label">Endereço:</div>
+                <div class="info-cell value" th:text="${inspection.site.address}"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>Dados da Inspeção</h3>
+        <div class="info-grid">
+            <div class="info-row">
+                <div class="info-cell label">Inspetor:</div>
+                <div class="info-cell value" th:text="${inspection.inspectorName}"></div>
+                <div class="info-cell label">Registro:</div>
+                <div class="info-cell value" th:text="${inspection.inspectorTechnicalRegistration}"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-cell label">Cargo/Função:</div>
+                <div class="info-cell value" th:text="${inspection.inspectorJobTitle}"></div>
+                <div class="info-cell label">Data/Hora Fim:</div>
+                <div class="info-cell value" th:text="${inspection.endedAt != null ? #temporals.format(inspection.endedAt, 'dd/MM/yyyy HH:mm') : ''}"></div>
+            </div>
+        </div>
+        <div style="margin-top: 10px; font-size: 14px;">
+            <span class="field-label">Objetivo da Inspeção:</span>
+            <p style="margin: 5px 0;" th:text="${inspection.objective}"></p>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>Setores Analisados</h3>
+        <ul class="list-group">
+            <li th:each="sector : ${analyzedSectors}" th:text="${sector.name}"></li>
+        </ul>
+    </div>
+
+    <!-- Iterate over Grouped Locations by Sector -->
+    <div th:each="sectorEntry : ${groupedLocations}" class="sector-block">
+        <div class="sector-title">Setor: <span th:text="${sectorEntry.key.name}"></span></div>
+        
+        <div th:each="loc : ${sectorEntry.value}" class="location-block">
+            <div class="location-header">
+                Local: <span th:text="${loc.name}"></span>
+            </div>
+            
+            <!-- Dados do Local -->
+            <div class="field-row" th:if="${loc.sublocation != null and loc.sublocation != ''}">
+                <span class="field-label">Sublocal:</span> <span th:text="${loc.sublocation}"></span>
+            </div>
+            <div class="field-row" th:if="${loc.environmentDescription != null and loc.environmentDescription != ''}">
+                <span class="field-label">Descrição do Ambiente:</span> <span th:text="${loc.environmentDescription}"></span>
+            </div>
+            <div class="field-row" th:if="${loc.activitiesSummary != null and loc.activitiesSummary != ''}">
+                <span class="field-label">Resumo de Atividades:</span> <span th:text="${loc.activitiesSummary}"></span>
+            </div>
+            <div class="field-row" th:if="${loc.exposedJobRoles != null and loc.exposedJobRoles != ''}">
+                <span class="field-label">Cargos Expostos:</span> <span th:text="${loc.exposedJobRoles}"></span>
+            </div>
+            <div class="field-row" th:if="${loc.exposedWorkersCount != null}">
+                <span class="field-label">Qtd. Trabalhadores Expostos:</span> <span th:text="${loc.exposedWorkersCount}"></span>
+            </div>
+
+            <!-- Itens de Verificação do Local -->
+            <div th:each="item, iterStat : ${loc.items}" class="item-block">
+                <div class="item-title">Item de Verificação #<span th:text="${iterStat.count}"></span></div>
+                
+                <div class="field-row">
+                    <span class="field-label">Situação:</span> 
+                    <span th:class="'status-badge status-' + ${item.situation}" th:text="${item.situation}"></span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">Descrição:</span> <span th:text="${item.description}"></span>
+                </div>
+
+                <div th:if="${item.situation == T(br.com.ximed.inspection_api.inspection.domain.enums.InspectionSituation).NON_CONFORMING}">
+                    <div class="field-row" th:if="${item.riskType != null}">
+                        <span class="field-label">Tipo de Risco:</span> <span th:text="${item.riskType}"></span>
+                    </div>
+                    <div class="field-row" th:if="${item.hazardDescription != null and item.hazardDescription != ''}">
+                        <span class="field-label">Descrição do Perigo:</span> <span th:text="${item.hazardDescription}"></span>
+                    </div>
+                    <div class="field-row" th:if="${item.possibleHarm != null and item.possibleHarm != ''}">
+                        <span class="field-label">Possíveis Danos:</span> <span th:text="${item.possibleHarm}"></span>
+                    </div>
+                    
+                    <div class="info-grid" style="margin: 5px 0;" th:if="${item.probability != null or item.severity != null or item.riskLevel != null}">
+                        <div class="info-row">
+                            <div class="info-cell label" style="width: auto;">Probabilidade:</div>
+                            <div class="info-cell value" th:text="${item.probability}"></div>
+                            <div class="info-cell label" style="width: auto;">Severidade:</div>
+                            <div class="info-cell value" th:text="${item.severity}"></div>
+                            <div class="info-cell label" style="width: auto;">Nível de Risco:</div>
+                            <div class="info-cell value" th:text="${item.riskLevel}"></div>
+                        </div>
+                    </div>
+
+                    <div class="field-row" th:if="${item.regulatoryStandard != null}">
+                        <span class="field-label">Norma Regulamentadora:</span> <span th:text="${item.regulatoryStandard}"></span>
+                        <span th:if="${item.nrItem != null and item.nrItem != ''}"> (Item: <span th:text="${item.nrItem}"></span>)</span>
+                    </div>
+
+                    <div class="field-row" th:if="${item.correctiveMeasure != null and item.correctiveMeasure != ''}">
+                        <span class="field-label">Medida Corretiva:</span> <span th:text="${item.correctiveMeasure}"></span>
+                    </div>
+                    <div class="field-row" th:if="${item.responsibleName != null and item.responsibleName != ''}">
+                        <span class="field-label">Responsável pela Ação:</span> <span th:text="${item.responsibleName}"></span>
+                    </div>
+                    <div class="field-row" th:if="${item.deadline != null}">
+                        <span class="field-label">Prazo:</span> <span th:text="${#temporals.format(item.deadline, 'dd/MM/yyyy')}"></span>
+                    </div>
+                </div>
+
+                <!-- Evidências -->
+                <div th:if="${not #lists.isEmpty(item.evidences)}" class="evidence-grid">
+                    <div class="field-label" style="text-align: left; margin-bottom: 5px;">Evidências Anexadas:</div>
+                    <img th:each="ev : ${item.evidences}" th:src="${ev.imgUrl}" class="evidence-img" alt="Evidência" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
