@@ -31,6 +31,9 @@ public record InspectionSummaryResponse(
         String companyName,
 
         @Schema(description = "Nome da filial")
-        String siteName
+        String siteName,
+
+        @Schema(description = "Nomes dos locais inspecionados")
+        List<String> locationNames
 ) {
 }

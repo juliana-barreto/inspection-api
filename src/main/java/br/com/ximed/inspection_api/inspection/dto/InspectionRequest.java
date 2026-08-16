@@ -1,6 +1,7 @@
 package br.com.ximed.inspection_api.inspection.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -30,10 +31,12 @@ public record InspectionRequest(
         String inspectorJobTitle,
 
         @Schema(description = "Registro técnico do inspetor", example = "MTE 123456/SP")
+        @NotBlank
         String inspectorTechnicalRegistration,
 
         @Schema(description = "Data e hora de início da inspeção", example = "2026-08-12T09:00:00")
         @NotNull
+        @PastOrPresent(message = "A data e hora de início não podem estar no futuro")
         LocalDateTime startedAt,
 
         @Schema(description = "Data e hora de término da inspeção", example = "2026-08-12T12:00:00")

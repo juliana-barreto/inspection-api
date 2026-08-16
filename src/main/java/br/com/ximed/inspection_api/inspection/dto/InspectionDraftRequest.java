@@ -3,6 +3,7 @@ package br.com.ximed.inspection_api.inspection.dto;
 import br.com.ximed.inspection_api.inspection.domain.enums.InspectionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,6 +29,7 @@ public record InspectionDraftRequest(
         String inspectorTechnicalRegistration,
 
         @Schema(description = "Data e hora de início da inspeção", example = "2026-08-12T09:00:00")
+        @PastOrPresent(message = "A data e hora de início não podem estar no futuro")
         LocalDateTime startedAt,
 
         @Schema(description = "Data e hora de término da inspeção", example = "2026-08-12T12:00:00")
