@@ -29,9 +29,6 @@ public class Sector {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
-
     // Não deve ser removido em cascata, pois a exclusão de um setor não deve excluir as localizações de inspeção associadas.
     @Builder.Default
     @OneToMany(mappedBy = "sector")
