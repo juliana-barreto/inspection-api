@@ -7,6 +7,8 @@ import br.com.ximed.inspection_api.inspection.domain.Inspection;
 import br.com.ximed.inspection_api.inspection.domain.InspectionItem;
 import br.com.ximed.inspection_api.inspection.domain.InspectionLocation;
 import br.com.ximed.inspection_api.inspection.domain.enums.RiskLevel;
+import br.com.ximed.inspection_api.company.dto.SiteLocationResponse;
+import br.com.ximed.inspection_api.company.dto.SectorResponse;
 import br.com.ximed.inspection_api.inspection.dto.*;
 import org.springframework.stereotype.Component;
 import java.util.Collections;
@@ -53,7 +55,34 @@ public class InspectionMapper {
         );
     }
 
+    public InspectionSummaryResponse toSummaryResponse(Inspection inspection) {
+        if (inspection == null) {
+            return null;
+        }
+
+        List<String> locationNames = inspection.getInspectionLocations() != null
+                ? inspection.getInspectionLocations().stream().map(InspectionLocation::getName).toList()
+                : Collections.emptyList();
+
+        UUID siteId = inspection.getSite() != null ? inspection.getSite().getId() : null;
+        String siteName = inspection.getSite() != null ? inspection.getSite().getName() : null;
+        String companyName = inspection.getSite() != null && inspection.getSite().getCompany() != null ? inspection.getSite().getCompany().getTradeName() : null;
+
+        return new InspectionSummaryResponse(
+                inspection.getId(),
+                inspection.getCode(),
+                inspection.getStatus(),
+                inspection.getEndedAt(),
+                inspection.getInspectorName(),
+                siteId,
+                companyName,
+                siteName,
+                locationNames
+        );
+    }
+
     public InspectionLocationResponse toLocationResponse(InspectionLocation location) {
+
         if (location == null) {
             return null;
         }
@@ -86,6 +115,24 @@ public class InspectionMapper {
                 itemResponses
         );
     }
+
+    public SiteLocationResponse toSiteLocationResponse(InspectionLocation location) {
+        if (location == null) {
+            return null;
+        }
+
+        UUID sectorId = location.getSector() != null ? location.getSector().getId() : null;
+        String sectorName = location.getSector() != null ? location.getSector().getName() : null;
+
+        return new SiteLocationResponse(
+                location.getId(),
+                sectorId,
+                sectorName,
+                location.getName(),
+                location.getSublocation()
+        );
+    }
+
 
     public InspectionItemResponse toItemResponse(InspectionItem item) {
         if (item == null) {
@@ -186,6 +233,41 @@ public class InspectionMapper {
         inspection.setInspectorTechnicalRegistration(request.inspectorTechnicalRegistration());
     }
 
+    public void updateEntityFromDraftRequest(Inspection inspection, InspectionDraftRequest request, Site site) {
+        if (inspection == null || request == null) {
+            return;
+        }
+
+        if (site != null) {
+            inspection.setSite(site);
+        }
+        if (request.objective() != null) {
+            inspection.setObjective(request.objective());
+        }
+        if (request.multisectoral() != null) {
+            inspection.setMultisectoral(request.multisectoral());
+        }
+        if (request.inspectorName() != null) {
+            inspection.setInspectorName(request.inspectorName());
+        }
+        if (request.inspectorJobTitle() != null) {
+            inspection.setInspectorJobTitle(request.inspectorJobTitle());
+        }
+        if (request.inspectorTechnicalRegistration() != null) {
+            inspection.setInspectorTechnicalRegistration(request.inspectorTechnicalRegistration());
+        }
+        if (request.startedAt() != null) {
+            inspection.setStartedAt(request.startedAt());
+        }
+        if (request.endedAt() != null) {
+            inspection.setEndedAt(request.endedAt());
+        }
+        if (request.status() != null) {
+            inspection.setStatus(request.status());
+        }
+    }
+
+
     public InspectionLocation toLocationEntity(InspectionLocationRequest request, Inspection inspection, Sector sector) {
         if (request == null) {
             return null;
@@ -226,4 +308,40 @@ public class InspectionMapper {
                 .deadline(request.deadline())
                 .build();
     }
+
+    public void updateLocationFromRequest(InspectionLocation location, InspectionLocationRequest request, Sector sector) {
+        if (location == null || request == null) {
+            return;
+        }
+
+        location.setSector(sector);
+        location.setName(request.name());
+        location.setSublocation(request.sublocation());
+        location.setEnvironmentDescription(request.environmentDescription());
+        location.setActivitiesSummary(request.activitiesSummary());
+        location.setExposedJobRoles(request.exposedJobRoles());
+        location.setExposedWorkersCount(request.exposedWorkersCount());
+        location.setVisitOrder(request.visitOrder());
+    }
+
+    public void updateItemFromRequest(InspectionItem item, InspectionItemRequest request, RiskLevel riskLevel) {
+        if (item == null || request == null) {
+            return;
+        }
+
+        item.setSituation(request.situation());
+        item.setDescription(request.description());
+        item.setRiskType(request.riskType());
+        item.setHazardDescription(request.hazardDescription());
+        item.setPossibleHarm(request.possibleHarm());
+        item.setProbability(request.probability());
+        item.setSeverity(request.severity());
+        item.setRiskLevel(riskLevel);
+        item.setRegulatoryStandard(request.regulatoryStandard());
+        item.setNrItem(request.nrItem());
+        item.setCorrectiveMeasure(request.correctiveMeasure());
+        item.setResponsibleName(request.responsibleName());
+        item.setDeadline(request.deadline());
+    }
 }
+

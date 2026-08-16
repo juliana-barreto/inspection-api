@@ -10,9 +10,11 @@ import br.com.ximed.inspection_api.inspection.domain.*;
 import br.com.ximed.inspection_api.inspection.domain.enums.*;
 import br.com.ximed.inspection_api.inspection.dto.*;
 import br.com.ximed.inspection_api.inspection.repository.*;
+import br.com.ximed.inspection_api.storage.CloudflareStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,11 +26,13 @@ public class InspectionService {
     private final InspectionRepository inspectionRepository;
     private final InspectionLocationRepository inspectionLocationRepository;
     private final InspectionItemRepository inspectionItemRepository;
+    private final EvidenceRepository evidenceRepository;
 
     private final SiteRepository siteRepository;
     private final SectorRepository sectorRepository;
 
     private final InspectionMapper inspectionMapper;
+    private final CloudflareStorageService cloudflareStorageService;
 
     @Transactional
     public InspectionResponse create(InspectionRequest request) {
@@ -38,18 +42,20 @@ public class InspectionService {
 
         Inspection inspection = inspectionMapper.toEntity(request, site);
         inspection.setCode(generateNextCode());
-        inspection.setStatus(InspectionStatus.IN_PROGRESS);
+        inspection.setStatus(InspectionStatus.DRAFT);
         inspectionRepository.save(inspection);
 
         return inspectionMapper.toResponse(inspection);
     }
 
     @Transactional(readOnly = true)
-    public InspectionResponse findById(UUID id) {
-        Inspection inspection = inspectionRepository.findByIdWithReportData(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Inspeção não encontrada"));
-        return inspectionMapper.toResponse(inspection);
+    public List<InspectionSummaryResponse> findAll(UUID siteId, InspectionStatus status) {
+        List<Inspection> inspections = inspectionRepository.findAllBySiteAndStatus(siteId, status);
+        return inspections.stream()
+                .map(inspectionMapper::toSummaryResponse)
+                .toList();
     }
+
 
     @Transactional
     public InspectionResponse update(UUID id, InspectionRequest request) {
@@ -97,6 +103,8 @@ public class InspectionService {
         return inspectionMapper.toItemResponse(item);
     }
 
+
+
     @Transactional
     public InspectionResponse submitForApproval(UUID id) {
         Inspection inspection = inspectionRepository.findById(id)
@@ -108,15 +116,15 @@ public class InspectionService {
         return inspectionMapper.toResponse(inspection);
     }
 
-    @Transactional
-    public InspectionResponse pause(UUID id) {
-        Inspection inspection = inspectionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Inspeção não encontrada"));
 
-        inspection.setStatus(InspectionStatus.PAUSED);
-        inspectionRepository.save(inspection);
 
-        return inspectionMapper.toResponse(inspection);
+
+    @Transactional(readOnly = true)
+    public List<PreviousNonConformityResponse> getPreviousNonConformities(UUID siteId) {
+        List<InspectionItem> items = inspectionItemRepository.findPreviousNonConformitiesBySiteId(siteId);
+        return items.stream()
+                .map(inspectionMapper::toPreviousNonConformityResponse)
+                .toList();
     }
 
     private String generateNextCode() {

@@ -1,13 +1,16 @@
 package br.com.ximed.inspection_api.inspection;
 
+import br.com.ximed.inspection_api.inspection.domain.enums.InspectionStatus;
 import br.com.ximed.inspection_api.inspection.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,13 +31,15 @@ public class InspectionController {
                 .body(inspectionService.create(request));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Buscar um relatório de inspeção")
-    public ResponseEntity<InspectionResponse> findById(@PathVariable UUID id) {
-        return ResponseEntity.ok(
-                inspectionService.findById(id)
-        );
+    @GetMapping
+    @Operation(summary = "Listar e filtrar relatórios de inspeção")
+    public ResponseEntity<List<InspectionSummaryResponse>> findAll(
+            @RequestParam(required = false) UUID siteId,
+            @RequestParam(required = false) InspectionStatus status
+    ) {
+        return ResponseEntity.ok(inspectionService.findAll(siteId, status));
     }
+
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar os dados gerais do relatório de inspeção")
@@ -67,7 +72,7 @@ public class InspectionController {
 
     @PostMapping("/{inspectionId}/locations/{locationId}/items")
     @Operation(summary = "Adicionar um item à localização inspecionada")
-    public ResponseEntity<InspectionItemResponse> Items(
+    public ResponseEntity<InspectionItemResponse> addItem(
             @PathVariable UUID inspectionId,
             @PathVariable UUID locationId,
             @Valid @RequestBody InspectionItemRequest request
@@ -77,15 +82,20 @@ public class InspectionController {
                 .body(inspectionService.addItem(inspectionId, locationId, request));
     }
 
+
+
     @PatchMapping("/{id}/submit")
     @Operation(summary = "Enviar relatório de inspeção para aprovação")
     public ResponseEntity<InspectionResponse> submit(@PathVariable UUID id) {
         return ResponseEntity.ok(inspectionService.submitForApproval(id));
     }
 
-    @PatchMapping("/{id}/pause")
-    @Operation(summary = "Pausar relatório de inspeção")
-    public ResponseEntity<InspectionResponse> pause(@PathVariable UUID id) {
-        return ResponseEntity.ok(inspectionService.pause(id));
+
+
+
+    @GetMapping("/previous-nonconformities")
+    @Operation(summary = "Buscar não conformidades da inspeção anterior")
+    public ResponseEntity<List<PreviousNonConformityResponse>> getPreviousNonConformities(@RequestParam UUID siteId) {
+        return ResponseEntity.ok(inspectionService.getPreviousNonConformities(siteId));
     }
 }
