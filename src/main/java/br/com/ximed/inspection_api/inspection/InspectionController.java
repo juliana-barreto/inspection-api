@@ -82,6 +82,48 @@ public class InspectionController {
                 .body(inspectionService.addItem(inspectionId, locationId, request));
     }
 
+    @DeleteMapping("/{inspectionId}/locations/{locationId}")
+    @Operation(summary = "Excluir uma localização da inspeção")
+    public ResponseEntity<Void> deleteLocation(
+            @PathVariable UUID inspectionId,
+            @PathVariable UUID locationId
+    ) {
+        inspectionService.deleteLocation(inspectionId, locationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{inspectionId}/locations/{locationId}/items/{itemId}")
+    @Operation(summary = "Excluir um item da localização")
+    public ResponseEntity<Void> deleteItem(
+            @PathVariable UUID inspectionId,
+            @PathVariable UUID locationId,
+            @PathVariable UUID itemId
+    ) {
+        inspectionService.deleteItem(inspectionId, locationId, itemId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{inspectionId}/locations/{locationId}")
+    @Operation(summary = "Atualizar uma localização da inspeção")
+    public ResponseEntity<InspectionLocationResponse> updateLocation(
+            @PathVariable UUID inspectionId,
+            @PathVariable UUID locationId,
+            @Valid @RequestBody InspectionLocationRequest request
+    ) {
+        return ResponseEntity.ok(inspectionService.updateLocation(inspectionId, locationId, request));
+    }
+
+    @PutMapping("/{inspectionId}/locations/{locationId}/items/{itemId}")
+    @Operation(summary = "Atualizar um item da localização")
+    public ResponseEntity<InspectionItemResponse> updateItem(
+            @PathVariable UUID inspectionId,
+            @PathVariable UUID locationId,
+            @PathVariable UUID itemId,
+            @Valid @RequestBody InspectionItemRequest request
+    ) {
+        return ResponseEntity.ok(inspectionService.updateItem(inspectionId, locationId, itemId, request));
+    }
+
 
 
     @PatchMapping("/{id}/submit")

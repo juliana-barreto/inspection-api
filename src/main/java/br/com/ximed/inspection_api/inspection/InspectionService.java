@@ -10,7 +10,6 @@ import br.com.ximed.inspection_api.inspection.domain.*;
 import br.com.ximed.inspection_api.inspection.domain.enums.*;
 import br.com.ximed.inspection_api.inspection.dto.*;
 import br.com.ximed.inspection_api.inspection.repository.*;
-import br.com.ximed.inspection_api.storage.CloudflareStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +25,11 @@ public class InspectionService {
     private final InspectionRepository inspectionRepository;
     private final InspectionLocationRepository inspectionLocationRepository;
     private final InspectionItemRepository inspectionItemRepository;
-    private final EvidenceRepository evidenceRepository;
 
     private final SiteRepository siteRepository;
     private final SectorRepository sectorRepository;
 
     private final InspectionMapper inspectionMapper;
-    private final CloudflareStorageService cloudflareStorageService;
 
     @Transactional
     public InspectionResponse create(InspectionRequest request) {
@@ -71,6 +68,11 @@ public class InspectionService {
     public void delete(UUID id) {
         Inspection inspection = inspectionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Inspeção não encontrada"));
+                
+        if (inspection.getStatus() != InspectionStatus.DRAFT) {
+            throw new BusinessException("Apenas inspeções em rascunho podem ser excluídas.");
+        }
+        
         inspectionRepository.delete(inspection);
     }
 
@@ -101,6 +103,73 @@ public class InspectionService {
         InspectionItem item = inspectionMapper.toItemEntity(request, location, riskLevel);
         inspectionItemRepository.save(item);
         return inspectionMapper.toItemResponse(item);
+    }
+
+    @Transactional
+    public void deleteLocation(UUID inspectionId, UUID locationId) {
+        InspectionLocation location = inspectionLocationRepository.findByIdAndInspectionId(locationId, inspectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Localização não encontrada"));
+                
+        if (location.getInspection().getStatus() != InspectionStatus.DRAFT) {
+            throw new BusinessException("Apenas locais de inspeções em rascunho podem ser excluídos.");
+        }
+        
+        inspectionLocationRepository.delete(location);
+    }
+
+    @Transactional
+    public void deleteItem(UUID inspectionId, UUID locationId, UUID itemId) {
+        InspectionItem item = inspectionItemRepository.findByIdAndLocationIdAndInspectionId(itemId, locationId, inspectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Item não encontrado"));
+                
+        if (item.getInspectionLocation().getInspection().getStatus() != InspectionStatus.DRAFT) {
+            throw new BusinessException("Apenas itens de inspeções em rascunho podem ser excluídos.");
+        }
+        
+        inspectionItemRepository.delete(item);
+    }
+
+    @Transactional
+    public InspectionLocationResponse updateLocation(UUID inspectionId, UUID locationId, InspectionLocationRequest request) {
+        java.util.Optional<InspectionLocation> optLocation = inspectionLocationRepository.findByIdAndInspectionId(locationId, inspectionId);
+                
+        Sector sector = sectorRepository.findById(request.sectorId())
+                .orElseThrow(() -> new ResourceNotFoundException("Setor não encontrado"));
+                
+        if (optLocation.isPresent()) {
+            InspectionLocation location = optLocation.get();
+            inspectionMapper.updateLocationFromRequest(location, request, sector);
+            inspectionLocationRepository.save(location);
+            return inspectionMapper.toLocationResponse(location);
+        } else {
+            Inspection inspection = inspectionRepository.findById(inspectionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Inspeção não encontrada"));
+            InspectionLocation location = inspectionMapper.toLocationEntity(request, inspection, sector);
+            location.setId(locationId);
+            inspectionLocationRepository.save(location);
+            return inspectionMapper.toLocationResponse(location);
+        }
+    }
+
+    @Transactional
+    public InspectionItemResponse updateItem(UUID inspectionId, UUID locationId, UUID itemId, InspectionItemRequest request) {
+        java.util.Optional<InspectionItem> optItem = inspectionItemRepository.findByIdAndLocationIdAndInspectionId(itemId, locationId, inspectionId);
+        
+        RiskLevel riskLevel = calculateRiskLevel(request.probability(), request.severity());
+        
+        if (optItem.isPresent()) {
+            InspectionItem item = optItem.get();
+            inspectionMapper.updateItemFromRequest(item, request, riskLevel);
+            inspectionItemRepository.save(item);
+            return inspectionMapper.toItemResponse(item);
+        } else {
+            InspectionLocation location = inspectionLocationRepository.findByIdAndInspectionId(locationId, inspectionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Localização não encontrada"));
+            InspectionItem item = inspectionMapper.toItemEntity(request, location, riskLevel);
+            item.setId(itemId);
+            inspectionItemRepository.save(item);
+            return inspectionMapper.toItemResponse(item);
+        }
     }
 
 
