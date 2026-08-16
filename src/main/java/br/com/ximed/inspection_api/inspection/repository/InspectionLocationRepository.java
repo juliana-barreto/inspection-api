@@ -17,4 +17,15 @@ public interface InspectionLocationRepository extends JpaRepository<InspectionLo
             WHERE location.id = :id AND inspection.id = :inspectionId
             """)
     Optional<InspectionLocation> findByIdAndInspectionId(UUID id, UUID inspectionId);
+
+    @Query("""
+            SELECT DISTINCT location
+            FROM InspectionLocation location
+            LEFT JOIN FETCH location.sector sector
+            JOIN location.inspection inspection
+            WHERE inspection.site.id = :siteId OR sector.site.id = :siteId
+            ORDER BY location.createdAt DESC
+            """)
+    java.util.List<InspectionLocation> findBySiteId(UUID siteId);
 }
+
