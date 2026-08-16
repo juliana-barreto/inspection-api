@@ -14,7 +14,7 @@ public record InspectionLocationResponse(
         UUID sectorId,
 
         @Schema(description = "Nome do setor vinculado", example = "Recursos Humanos")
-        String sector,
+        String sectorName,
 
         @Schema(description = "Nome da localização inspecionada", example = "Sala administrativa do RH")
         String name,
