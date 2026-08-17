@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface InspectionItemRepository extends JpaRepository<InspectionItem, UUID> {
 
     @Query("""
-        SELECT distinct item
+        SELECT item
         FROM InspectionItem item
         JOIN FETCH item.inspectionLocation location
         JOIN FETCH location.inspection inspection
@@ -33,7 +33,7 @@ public interface InspectionItemRepository extends JpaRepository<InspectionItem, 
     List<InspectionItem> findPreviousNonConformitiesBySiteId(@Param("siteId") UUID siteId);
 
     @Query("""
-        SELECT distinct item
+        SELECT item
         FROM InspectionItem item
         JOIN FETCH item.inspectionLocation location
         JOIN FETCH location.inspection inspection

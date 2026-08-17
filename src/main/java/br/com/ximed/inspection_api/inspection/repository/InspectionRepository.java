@@ -12,10 +12,11 @@ import java.util.UUID;
 
 public interface InspectionRepository extends JpaRepository<Inspection, UUID> {
 
+    Optional<Inspection> findFirstByStatusOrderByCreatedAtDesc(InspectionStatus status);
 
 
     @Query("""
-            SELECT DISTINCT i
+            SELECT i
             FROM Inspection i
             LEFT JOIN FETCH i.site
             WHERE (:siteId IS NULL OR i.site.id = :siteId)

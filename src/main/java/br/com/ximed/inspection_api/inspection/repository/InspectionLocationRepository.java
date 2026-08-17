@@ -10,7 +10,7 @@ import java.util.UUID;
 public interface InspectionLocationRepository extends JpaRepository<InspectionLocation, UUID> {
 
     @Query("""
-            SELECT DISTINCT location
+            SELECT location
             FROM InspectionLocation location
             JOIN FETCH location.inspection inspection
             LEFT JOIN FETCH location.sector sector
