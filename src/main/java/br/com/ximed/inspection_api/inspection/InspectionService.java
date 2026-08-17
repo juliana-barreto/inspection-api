@@ -214,17 +214,6 @@ public class InspectionService {
         return inspectionMapper.toResponse(inspection);
     }
 
-
-
-
-    @Transactional(readOnly = true)
-    public List<PreviousNonConformityResponse> getPreviousNonConformities(UUID siteId) {
-        List<InspectionItem> items = inspectionItemRepository.findPreviousNonConformitiesBySiteId(siteId);
-        return items.stream()
-                .map(inspectionMapper::toPreviousNonConformityResponse)
-                .toList();
-    }
-
     private String generateNextCode() {
         int year = java.time.Year.now().getValue();
         long nextSeq = inspectionRepository.count() + 1;

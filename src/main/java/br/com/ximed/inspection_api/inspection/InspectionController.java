@@ -159,9 +159,4 @@ public class InspectionController {
                 .body(inspectionService.addEvidence(inspectionId, locationId, itemId, file, caption));
     }
 
-    @GetMapping("/previous-nonconformities")
-    @Operation(summary = "Buscar não conformidades da inspeção anterior")
-    public ResponseEntity<List<PreviousNonConformityResponse>> getPreviousNonConformities(@RequestParam UUID siteId) {
-        return ResponseEntity.ok(inspectionService.getPreviousNonConformities(siteId));
-    }
 }

@@ -103,7 +103,6 @@ http://localhost:8080/swagger-ui.html
 | `PUT` | `/api/inspections/{id}` | Atualizar inspeção |
 | `DELETE` | `/api/inspections/{id}` | Excluir inspeção |
 | `PATCH` | `/api/inspections/{id}/submit` | Finalizar e submeter inspeção |
-| `GET` | `/api/inspections/previous-nonconformities?siteId=` | Histórico de não conformidades do local |
 
 ### Locais — `.../locations`
 

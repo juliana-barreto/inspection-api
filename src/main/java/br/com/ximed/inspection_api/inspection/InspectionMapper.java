@@ -164,31 +164,6 @@ public class InspectionMapper {
         );
     }
 
-    public PreviousNonConformityResponse toPreviousNonConformityResponse(InspectionItem item) {
-        if (item == null) {
-            return null;
-        }
-
-        InspectionLocation location = item.getInspectionLocation();
-        Inspection inspection = location != null ? location.getInspection() : null;
-        String sectorName = location != null && location.getSector() != null ? location.getSector().getName() : null;
-
-        return new PreviousNonConformityResponse(
-                inspection != null ? inspection.getId() : null,
-                inspection != null ? inspection.getStartedAt() : null,
-
-                sectorName,
-                location != null ? location.getName() : null,
-                location != null ? location.getSublocation() : null,
-
-                item.getDescription(),
-                item.getRiskLevel(),
-
-                item.getCorrectiveMeasure(),
-                item.getDeadline()
-        );
-    }
-
     public Inspection toEntity(InspectionRequest request, Site site) {
         if (request == null) {
             return null;
@@ -302,4 +277,3 @@ public class InspectionMapper {
         item.setDeadline(request.deadline());
     }
 }
-
