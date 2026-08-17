@@ -150,18 +150,20 @@
                         <span class="field-label">Possíveis Danos:</span> <span th:text="${item.possibleHarm}"></span>
                     </div>
                     
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 5px 0;" th:if="${item.probability != null or item.severity != null or item.riskLevel != null}">
-                        <div class="field-row" th:if="${item.probability != null}"><span class="field-label">Probabilidade:</span> <span th:text="${item.probability.description}"></span></div>
-                        <div class="field-row" th:if="${item.severity != null}"><span class="field-label">Severidade:</span> <span th:text="${item.severity.description}"></span></div>
-                        <div class="field-row" th:if="${item.riskLevel != null}">
-                            <span class="field-label">Nível de Risco:</span> 
-                            <span th:style="'font-weight: bold; color: ' + 
-                                (${item.riskLevel.name() == 'LOW'} ? '#28a745' : 
-                                (${item.riskLevel.name() == 'MEDIUM'} ? '#d39e00' : 
-                                (${item.riskLevel.name() == 'HIGH'} ? '#fd7e14' : 
-                                (${item.riskLevel.name() == 'CRITICAL'} ? '#dc3545' : '#333'))))" 
-                                th:text="${item.riskLevel.label}"></span>
-                        </div>
+                    <div class="field-row" th:if="${item.probability != null}">
+                        <span class="field-label">Probabilidade:</span> <span th:text="${item.probability.description}"></span>
+                    </div>
+                    <div class="field-row" th:if="${item.severity != null}">
+                        <span class="field-label">Severidade:</span> <span th:text="${item.severity.description}"></span>
+                    </div>
+                    <div class="field-row" th:if="${item.riskLevel != null}">
+                        <span class="field-label">Nível de Risco:</span> 
+                        <span th:style="'font-weight: bold; text-transform: uppercase; color: ' + 
+                            (${item.riskLevel.name() == 'LOW'} ? '#28a745' : 
+                            (${item.riskLevel.name() == 'MEDIUM'} ? '#d39e00' : 
+                            (${item.riskLevel.name() == 'HIGH'} ? '#fd7e14' : 
+                            (${item.riskLevel.name() == 'CRITICAL'} ? '#dc3545' : '#333'))))" 
+                            th:text="${item.riskLevel.label}"></span>
                     </div>
 
                     <div class="field-row" th:if="${item.regulatoryStandard != null}">
@@ -181,9 +183,9 @@
                 </div>
 
                 <!-- Evidências -->
-                <div th:if="${not #lists.isEmpty(item.evidences)}" class="evidence-grid">
+                <div th:if="${not #lists.isEmpty(item.evidences)}" class="evidence-grid" th:with="seenUrls=${new java.util.HashSet()}">
                     <div class="field-label" style="text-align: left; margin-bottom: 5px;">Evidência anexada:</div>
-                    <img th:each="ev : ${item.evidences}" th:src="${ev.imgUrl}" class="evidence-img" alt="Evidência" referrerpolicy="no-referrer" />
+                    <img th:each="ev : ${item.evidences}" th:if="${seenUrls.add(ev.imgUrl)}" th:src="${ev.imgUrl}" class="evidence-img" alt="Evidência" referrerpolicy="no-referrer" />
                 </div>
             </div>
         </div>
@@ -349,7 +351,7 @@
     </div>
 
     <!-- Assinatura do Inspetor -->
-    <div style="margin-top: 80px; text-align: center; page-break-inside: avoid;">
+    <div style="margin-top: 160px; text-align: center; page-break-inside: avoid;">
         <div style="width: 500px; border-top: 1px solid #333; margin: 0 auto; padding-top: 10px;">
             <p style="margin: 0; font-weight: bold; font-size: 16px;" th:text="${inspection.inspectorName}"></p>
             <p style="margin: 0; color: #555; font-size: 14px;" th:if="${inspection.inspectorJobTitle != null and inspection.inspectorJobTitle != ''}" th:text="${inspection.inspectorJobTitle}"></p>
