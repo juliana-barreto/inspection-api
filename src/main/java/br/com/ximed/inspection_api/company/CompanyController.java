@@ -2,7 +2,6 @@ package br.com.ximed.inspection_api.company;
 
 import br.com.ximed.inspection_api.company.dto.CompanyResponse;
 import br.com.ximed.inspection_api.company.dto.SectorResponse;
-import br.com.ximed.inspection_api.company.dto.SiteLocationResponse;
 import br.com.ximed.inspection_api.company.dto.SiteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
