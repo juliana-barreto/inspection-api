@@ -7,6 +7,5 @@ import java.util.UUID;
 
 public interface SectorRepository extends JpaRepository<Sector, UUID> {
 
-    // Retorna todos os setores de uma filial
-    List<Sector> findBySiteId(UUID siteId);
+
 }

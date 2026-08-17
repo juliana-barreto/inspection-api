@@ -2,11 +2,8 @@ package br.com.ximed.inspection_api.company;
 
 import br.com.ximed.inspection_api.company.dto.CompanyResponse;
 import br.com.ximed.inspection_api.company.dto.SectorResponse;
-import br.com.ximed.inspection_api.company.dto.SiteLocationResponse;
 import br.com.ximed.inspection_api.company.dto.SiteResponse;
 import br.com.ximed.inspection_api.exception.ResourceNotFoundException;
-import br.com.ximed.inspection_api.inspection.InspectionMapper;
-import br.com.ximed.inspection_api.inspection.repository.InspectionLocationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +16,6 @@ import java.util.UUID;
 public class CompanyService {
 
     private final CompanyRepository companyRepository;
-    private final SiteRepository siteRepository;
-    private final SectorRepository sectorRepository;
-    private final InspectionLocationRepository inspectionLocationRepository;
-    private final InspectionMapper inspectionMapper;
 
     // Método temporário para obter a empresa atual, considerando que há apenas uma empresa cadastrada.
     private Company getCurrentCompany() {
