@@ -35,52 +35,53 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedCompanyHierarchy() {
-        // Criando a Empresa Fictícia
+        // Criando a Empresa (Cliente da Ximed)
         Company company = Company.builder()
-                .corporateName("Apex Soluções Industriais e Serviços Ltda.")
-                .tradeName("Apex Industrial")
+                .corporateName("Rádio e Televisão Record S.A.")
+                .tradeName("Record TV")
                 .build();
         company = companyRepository.save(company);
 
-        // Criando Filial 1 (Sede)
+        // Criando Filial 1 (Sede Administrativa e Jornalismo - São Paulo)
         Site site1 = Site.builder()
                 .company(company)
-                .name("Sede / Rio de Janeiro")
-                .cnpj("12.345.678/0001-90")
-                .cnae("7020-4/00")
-                .address("Avenida Pastor Martin Luther King Jr., 126, Del Castilho - Rio de Janeiro/RJ")
+                .name("Sede Administrativa - Barra Funda")
+                .cnpj("60.500.000/0001-12") // CNPJ Fictício formatado
+                .cnae("6021-7/00") // Atividades de televisão aberta
+                .address("Rua da Várzea, 240, Barra Funda - São Paulo/SP")
                 .build();
         site1 = siteRepository.save(site1);
 
-        // Setores da Filial 1
+        // Setores da Filial 1 (Foco em ergonomia, elétrica e estúdios de jornalismo)
         List<Sector> site1Sectors = List.of(
-                Sector.builder().site(site1).name("Escritório de RH").build(),
-                Sector.builder().site(site1).name("Departamento de TI").build(),
-                Sector.builder().site(site1).name("Operações e Logística").build(),
-                Sector.builder().site(site1).name("Administrativo e Financeiro").build()
+                Sector.builder().site(site1).name("Estúdios de Jornalismo").build(),
+                Sector.builder().site(site1).name("Redação e Ilhas de Edição").build(),
+                Sector.builder().site(site1).name("Controle Mestre (Master)").build(),
+                Sector.builder().site(site1).name("Manutenção de Transmissores").build(),
+                Sector.builder().site(site1).name("Administrativo e RH").build()
         );
         sectorRepository.saveAll(site1Sectors);
 
-        // Criando Filial 2 (São Paulo)
+        // Criando Filial 2 (Complexo de Estúdios de Teledramaturgia - Rio de Janeiro)
         Site site2 = Site.builder()
                 .company(company)
-                .name("Filial / São Paulo")
-                .cnpj("12.345.678/0002-71")
-                .cnae("7020-4/00")
-                .address("Avenida das Nações Unidas, 4500, Pinheiros - São Paulo/SP")
+                .name("Complexo de Estúdios (RecNov)")
+                .cnpj("60.500.000/0002-95") // CNPJ Fictício formatado
+                .cnae("6021-7/00")
+                .address("Estrada dos Bandeirantes, 23505, Vargem Grande - Rio de Janeiro/RJ")
                 .build();
         site2 = siteRepository.save(site2);
 
-        // Setores da Filial 2
+        // Setores da Filial 2 (Foco em riscos físicos, maquinário pesado e infraestrutura)
         List<Sector> site2Sectors = List.of(
-                Sector.builder().site(site2).name("Almoxarifado e Estoque").build(),
-                Sector.builder().site(site2).name("Manutenção e Infraestrutura").build(),
-                Sector.builder().site(site2).name("Controle de Qualidade").build(),
-                Sector.builder().site(site2).name("Produção e Montagem").build()
+                Sector.builder().site(site2).name("Cenografia e Marcenaria").build(),
+                Sector.builder().site(site2).name("Estúdios de Teledramaturgia").build(),
+                Sector.builder().site(site2).name("Cidade Cenográfica (Externa)").build(),
+                Sector.builder().site(site2).name("Geradores e Subestação Elétrica").build(),
+                Sector.builder().site(site2).name("Acervo de Figurinos").build()
         );
         sectorRepository.saveAll(site2Sectors);
 
-        log.info("Seed de hierarquia concluído com sucesso.");
+        log.info("Seed de hierarquia concluído com sucesso para a Record TV.");
     }
 }
-
