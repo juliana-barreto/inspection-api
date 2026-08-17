@@ -3,7 +3,7 @@ package br.com.ximed.inspection_api.report;
 import br.com.ximed.inspection_api.exception.ResourceNotFoundException;
 import br.com.ximed.inspection_api.inspection.domain.Inspection;
 import br.com.ximed.inspection_api.inspection.repository.InspectionRepository;
-import br.com.ximed.inspection_api.storage.CloudflareStorageService;
+import br.com.ximed.inspection_api.storage.AzureBlobService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,13 +19,13 @@ public class ReportService {
 
     private final InspectionRepository inspectionRepository;
     private final ReportGenerator reportGenerator;
-    private final CloudflareStorageService storageService;
+    private final AzureBlobService storageService;
     private final ReportRepository reportRepository;
 
     @Transactional
     public Report generateAndSaveReport(UUID inspectionId) {
         Inspection inspection = inspectionRepository
-                .findByIdWithReportData(inspectionId)
+                .findById(inspectionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inspeção não encontrada"));
 
         // 1. Generate HTML String
@@ -38,14 +38,14 @@ public class ReportService {
         String htmlFileName = "report-" + inspection.getCode() + ".html";
         String pdfFileName = "report-" + inspection.getCode() + ".pdf";
         
-        var htmlUpload = storageService.uploadFile(htmlContent.getBytes(StandardCharsets.UTF_8), htmlFileName);
-        var pdfUpload = storageService.uploadFile(pdfBytes, pdfFileName);
+        String htmlUrl = storageService.uploadFile(htmlContent.getBytes(StandardCharsets.UTF_8), htmlFileName);
+        String pdfUrl = storageService.uploadFile(pdfBytes, pdfFileName);
         
         // 4. Save to DB
         Report report = Report.builder()
                 .inspection(inspection)
-                .htmlUrl(htmlUpload.imgUrl())
-                .pdfUrl(pdfUpload.imgUrl())
+                .htmlUrl(htmlUrl)
+                .pdfUrl(pdfUrl)
                 .build();
                 
         return reportRepository.save(report);
