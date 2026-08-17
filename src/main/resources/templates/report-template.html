@@ -2,15 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Relatório de Inspeção</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; }
-        .header { text-align: center; border-bottom: 2px solid #0056b3; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { color: #0056b3; margin: 0; font-size: 24px; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; max-width: 900px; margin: 40px auto; padding: 50px; border: 1px solid #eaeaea; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); background-color: #fff; }
+        @media print { body { max-width: 100%; margin: 0; padding: 0; border: none; box-shadow: none; } }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h1 { color: #333; margin: 0; font-size: 24px; }
         .header h2 { color: #555; margin: 5px 0 0 0; font-size: 18px; }
         
         .info-section { margin-bottom: 20px; }
-        .info-section h3 { background-color: #e9ecef; padding: 8px 10px; border-left: 5px solid #0056b3; margin-top: 0; font-size: 16px; }
+        .info-section h3 { padding: 8px 0; border-bottom: 2px solid #e9ecef; margin-top: 0; font-size: 16px; color: #333; }
         
         .info-grid { display: table; width: 100%; font-size: 14px; margin-bottom: 10px; }
         .info-row { display: table-row; }
@@ -21,13 +23,13 @@
         .list-group { margin: 0; padding: 0 0 0 20px; font-size: 14px; }
         
         .sector-block { margin-top: 30px; }
-        .sector-title { font-size: 18px; font-weight: bold; color: #fff; background-color: #0056b3; padding: 10px; border-radius: 4px; margin-bottom: 15px; page-break-after: avoid; }
+        .sector-title { font-size: 18px; font-weight: bold; color: #333; padding: 10px 0; border-bottom: 2px solid #333; margin-bottom: 15px; page-break-after: avoid; }
         
         .location-block { margin-top: 15px; border: 1px solid #ced4da; padding: 15px; page-break-inside: avoid; border-radius: 4px; margin-bottom: 15px; }
-        .location-header { font-size: 15px; font-weight: bold; color: #0056b3; margin-bottom: 10px; border-bottom: 1px solid #ced4da; padding-bottom: 5px; }
+        .location-header { font-size: 15px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #ced4da; padding-bottom: 5px; }
         
         .item-block { margin-top: 15px; border-top: 1px dashed #adb5bd; padding-top: 15px; }
-        .item-title { font-weight: bold; color: #0056b3; font-size: 14px; margin-bottom: 5px; }
+        .item-title { font-weight: bold; color: #333; font-size: 14px; margin-bottom: 5px; }
         
         .field-row { margin-bottom: 3px; font-size: 13px; }
         .field-label { font-weight: bold; color: #555; }
@@ -35,25 +37,22 @@
         .evidence-grid { margin-top: 15px; text-align: center; }
         .evidence-img { max-width: 250px; max-height: 250px; border: 1px solid #ccc; padding: 3px; margin: 5px; }
         
-        .status-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 12px; font-weight: bold; color: white; }
-        .status-CONFORMING { background-color: #28a745; }
-        .status-NON_CONFORMING { background-color: #dc3545; }
-        .status-NOT_APPLICABLE { background-color: #6c757d; }
+        .status-badge { display: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1 th:text="${inspection.site.company.corporateName}">Empresa</h1>
-        <h2 th:text="${inspection.site.company.tradeName != null ? inspection.site.company.tradeName : ''}"></h2>
-        <p>Relatório de Inspeção Técnica | Código: <span th:text="${inspection.code}"></span> | Data: <span th:text="${#temporals.format(inspection.createdAt, 'dd/MM/yyyy HH:mm')}"></span></p>
+        <h1>RELATÓRIO DE INSPEÇÃO DE SEGURANÇA DO TRABALHO</h1>
+        <h2 style="margin-top: 15px; font-size: 18px; color: #333;">Empresa: <span th:text="${inspection.site.company.tradeName != null ? inspection.site.company.tradeName : inspection.site.company.corporateName}" style="font-weight: normal;"></span></h2>
+        <h3 style="margin-top: 5px; font-size: 16px; color: #555;">Razão Social: <span th:text="${inspection.site.company.corporateName}" style="font-weight: normal;"></span></h3>
     </div>
 
     <div class="info-section">
         <h3>Identificação do Local</h3>
         <div class="info-grid">
             <div class="info-row">
-                <div class="info-cell label">Filial (Site):</div>
+                <div class="info-cell label">Unidade:</div>
                 <div class="info-cell value" th:text="${inspection.site.name}"></div>
                 <div class="info-cell label">CNPJ:</div>
                 <div class="info-cell value" th:text="${inspection.site.cnpj}"></div>
@@ -71,6 +70,12 @@
         <h3>Dados da Inspeção</h3>
         <div class="info-grid">
             <div class="info-row">
+                <div class="info-cell label">Código:</div>
+                <div class="info-cell value" th:text="${inspection.code}"></div>
+                <div class="info-cell label">Data da Inspeção:</div>
+                <div class="info-cell value" th:text="${#temporals.format(inspection.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
+            </div>
+            <div class="info-row">
                 <div class="info-cell label">Inspetor:</div>
                 <div class="info-cell value" th:text="${inspection.inspectorName}"></div>
                 <div class="info-cell label">Registro:</div>
@@ -83,7 +88,7 @@
                 <div class="info-cell value" th:text="${inspection.endedAt != null ? #temporals.format(inspection.endedAt, 'dd/MM/yyyy HH:mm') : ''}"></div>
             </div>
         </div>
-        <div style="margin-top: 10px; font-size: 14px;">
+        <div style="margin-top: 10px; font-size: 14px; padding-left: 5px;">
             <span class="field-label">Objetivo da Inspeção:</span>
             <p style="margin: 5px 0;" th:text="${inspection.objective}"></p>
         </div>
@@ -128,7 +133,7 @@
                 
                 <div class="field-row">
                     <span class="field-label">Situação:</span> 
-                    <span th:class="'status-badge status-' + ${item.situation}" th:text="${item.situation}"></span>
+                    <span th:style="'font-weight: bold; text-transform: uppercase; color: ' + ${item.situation.color}" th:text="${item.situation.label}"></span>
                 </div>
                 <div class="field-row">
                     <span class="field-label">Descrição:</span> <span th:text="${item.description}"></span>
@@ -136,7 +141,7 @@
 
                 <div th:if="${item.situation == T(br.com.ximed.inspection_api.inspection.domain.enums.InspectionSituation).NON_CONFORMING}">
                     <div class="field-row" th:if="${item.riskType != null}">
-                        <span class="field-label">Tipo de Risco:</span> <span th:text="${item.riskType}"></span>
+                        <span class="field-label">Tipo de Risco:</span> <span th:text="${item.riskType.label}"></span>
                     </div>
                     <div class="field-row" th:if="${item.hazardDescription != null and item.hazardDescription != ''}">
                         <span class="field-label">Descrição do Perigo:</span> <span th:text="${item.hazardDescription}"></span>
@@ -145,14 +150,17 @@
                         <span class="field-label">Possíveis Danos:</span> <span th:text="${item.possibleHarm}"></span>
                     </div>
                     
-                    <div class="info-grid" style="margin: 5px 0;" th:if="${item.probability != null or item.severity != null or item.riskLevel != null}">
-                        <div class="info-row">
-                            <div class="info-cell label" style="width: auto;">Probabilidade:</div>
-                            <div class="info-cell value" th:text="${item.probability}"></div>
-                            <div class="info-cell label" style="width: auto;">Severidade:</div>
-                            <div class="info-cell value" th:text="${item.severity}"></div>
-                            <div class="info-cell label" style="width: auto;">Nível de Risco:</div>
-                            <div class="info-cell value" th:text="${item.riskLevel}"></div>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 5px 0;" th:if="${item.probability != null or item.severity != null or item.riskLevel != null}">
+                        <div class="field-row" th:if="${item.probability != null}"><span class="field-label">Probabilidade:</span> <span th:text="${item.probability.description}"></span></div>
+                        <div class="field-row" th:if="${item.severity != null}"><span class="field-label">Severidade:</span> <span th:text="${item.severity.description}"></span></div>
+                        <div class="field-row" th:if="${item.riskLevel != null}">
+                            <span class="field-label">Nível de Risco:</span> 
+                            <span th:style="'font-weight: bold; color: ' + 
+                                (${item.riskLevel.name() == 'LOW'} ? '#28a745' : 
+                                (${item.riskLevel.name() == 'MEDIUM'} ? '#d39e00' : 
+                                (${item.riskLevel.name() == 'HIGH'} ? '#fd7e14' : 
+                                (${item.riskLevel.name() == 'CRITICAL'} ? '#dc3545' : '#333'))))" 
+                                th:text="${item.riskLevel.label}"></span>
                         </div>
                     </div>
 
@@ -174,12 +182,184 @@
 
                 <!-- Evidências -->
                 <div th:if="${not #lists.isEmpty(item.evidences)}" class="evidence-grid">
-                    <div class="field-label" style="text-align: left; margin-bottom: 5px;">Evidências Anexadas:</div>
-                    <img th:each="ev : ${item.evidences}" th:src="${ev.imgUrl}" class="evidence-img" alt="Evidência" />
+                    <div class="field-label" style="text-align: left; margin-bottom: 5px;">Evidência anexada:</div>
+                    <img th:each="ev : ${item.evidences}" th:src="${ev.imgUrl}" class="evidence-img" alt="Evidência" referrerpolicy="no-referrer" />
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Plano de Ação Consolidado -->
+    <div style="page-break-before: always; margin-top: 30px;">
+        <h3 style="border-bottom: 2px solid #333; padding-bottom: 5px;">Plano de Ação Consolidado</h3>
+        <p style="font-size: 13px; color: #555;">Lista de todas as não conformidades encontradas durante a inspeção e suas respectivas medidas corretivas recomendadas.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 15px;">
+            <thead>
+                <tr style="background-color: #f1f3f5; border-bottom: 2px solid #ced4da;">
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ced4da;">Local / Setor</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ced4da;">Risco / Perigo</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ced4da;">Ação (O Que Fazer)</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ced4da;">Quem</th>
+                    <th style="padding: 8px; text-align: left; border: 1px solid #ced4da;">Prazo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iteração em Setores -> Locais -> Itens Não Conformes -->
+                <th:block th:each="sectorEntry : ${groupedLocations}">
+                    <th:block th:each="loc : ${sectorEntry.value}">
+                        <th:block th:each="item : ${loc.items}">
+                            <tr th:if="${item.situation == T(br.com.ximed.inspection_api.inspection.domain.enums.InspectionSituation).NON_CONFORMING}" style="border-bottom: 1px solid #e9ecef;">
+                                <td style="padding: 8px; border: 1px solid #ced4da; vertical-align: top;">
+                                    <strong th:text="${loc.name}"></strong><br/>
+                                    <span style="color: #666; font-size: 11px;" th:text="${sectorEntry.key.name}"></span>
+                                </td>
+                                <td style="padding: 8px; border: 1px solid #ced4da; vertical-align: top;">
+                                    <span th:text="${item.hazardDescription}"></span>
+                                </td>
+                                <td style="padding: 8px; border: 1px solid #ced4da; vertical-align: top;">
+                                    <span th:text="${item.correctiveMeasure}"></span>
+                                </td>
+                                <td style="padding: 8px; border: 1px solid #ced4da; vertical-align: top;">
+                                    <span th:text="${item.responsibleName}"></span>
+                                </td>
+                                <td style="padding: 8px; border: 1px solid #ced4da; vertical-align: top; white-space: nowrap;">
+                                    <span th:if="${item.deadline != null}" th:text="${#temporals.format(item.deadline, 'dd/MM/yyyy')}"></span>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                </th:block>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Anexo Metodológico -->
+    <div style="page-break-before: always; margin-top: 50px;">
+        <h3 style="border-bottom: 2px solid #333; padding-bottom: 5px;">Metodologia de Avaliação de Riscos</h3>
+        <p style="font-size: 13px; text-align: justify; margin-bottom: 15px;">
+            A presente inspeção utilizou a metodologia de avaliação baseada na Matriz de Risco (Probabilidade x Severidade). O Nível de Risco (NR) é o resultado do produto entre a probabilidade de ocorrência do evento (escala de 1 a 5) e a severidade do possível dano ou lesão (escala de 1 a 5), de acordo com as definições a seguir:
+        </p>
+
+        <!-- Tabelas de Definição -->
+        <table style="width: 100%; border: none; margin-bottom: 20px;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; padding-right: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <tr style="background-color: #f1f3f5;">
+                            <th colspan="2" style="border: 1px solid #ccc; padding: 5px; text-align: left;">Classificação da Probabilidade (P)</th>
+                        </tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold; width: 30%;">1 - Rara</td><td style="border: 1px solid #ccc; padding: 4px;">Pode ocorrer apenas em situações excepcionais.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">2 - Improvável</td><td style="border: 1px solid #ccc; padding: 4px;">Pode ocorrer em algum momento, mas é difícil.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">3 - Possível</td><td style="border: 1px solid #ccc; padding: 4px;">Tem probabilidade moderada de acontecer.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">4 - Provável</td><td style="border: 1px solid #ccc; padding: 4px;">Provavelmente ocorrerá na maioria das situações.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">5 - Frequente</td><td style="border: 1px solid #ccc; padding: 4px;">Ocorrência esperada ou certa de acontecer.</td></tr>
+                    </table>
+                </td>
+                <td style="width: 50%; vertical-align: top; padding-left: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                        <tr style="background-color: #f1f3f5;">
+                            <th colspan="2" style="border: 1px solid #ccc; padding: 5px; text-align: left;">Classificação da Severidade (S)</th>
+                        </tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold; width: 35%;">1 - Insignificante</td><td style="border: 1px solid #ccc; padding: 4px;">Sem lesão/afastamento. Só 1º socorros.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">2 - Menor</td><td style="border: 1px solid #ccc; padding: 4px;">Tratamento médico, afastamento curto.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">3 - Moderada</td><td style="border: 1px solid #ccc; padding: 4px;">Lesão grave, impacto considerável.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">4 - Maior</td><td style="border: 1px solid #ccc; padding: 4px;">Invalidez permanente ou 1 fatalidade.</td></tr>
+                        <tr><td style="border: 1px solid #ccc; padding: 4px; font-weight: bold;">5 - Catastrófica</td><td style="border: 1px solid #ccc; padding: 4px;">Múltiplas fatalidades/danos severos.</td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <h4 style="margin-bottom: 5px; font-size: 14px; color: #333;">Matriz de Nível de Risco (NR = P x S)</h4>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: center;">
+            <tr style="background-color: #f1f3f5;">
+                <th rowspan="2" style="border: 1px solid #ccc; padding: 5px;">Probabilidade</th>
+                <th colspan="5" style="border: 1px solid #ccc; padding: 5px;">Severidade</th>
+            </tr>
+            <tr style="background-color: #f1f3f5;">
+                <th style="border: 1px solid #ccc; padding: 5px;">Insignificante (1)</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Menor (2)</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Moderada (3)</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Maior (4)</th>
+                <th style="border: 1px solid #ccc; padding: 5px;">Catastrófica (5)</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; text-align: left;">Frequente (5)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (5)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (10)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (15)</td>
+                <td style="border: 1px solid #ccc; background-color: #dc3545; color: white; padding: 5px;">Crítico (20)</td>
+                <td style="border: 1px solid #ccc; background-color: #dc3545; color: white; padding: 5px;">Crítico (25)</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; text-align: left;">Provável (4)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (4)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (8)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (12)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (16)</td>
+                <td style="border: 1px solid #ccc; background-color: #dc3545; color: white; padding: 5px;">Crítico (20)</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; text-align: left;">Possível (3)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (3)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (6)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (9)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (12)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (15)</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; text-align: left;">Improvável (2)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (2)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (4)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (6)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (8)</td>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px;">Alto (10)</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; padding: 5px; font-weight: bold; text-align: left;">Rara (1)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (1)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (2)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (3)</td>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px;">Baixo (4)</td>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px;">Médio (5)</td>
+            </tr>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px;">
+            <tr style="background-color: #f1f3f5;">
+                <th colspan="2" style="border: 1px solid #ccc; padding: 5px; text-align: left;">Ação Recomendada Baseada no Nível de Risco</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; background-color: #28a745; color: white; padding: 5px; font-weight: bold; width: 20%; text-align: center;">Baixo (1 a 4)</td>
+                <td style="border: 1px solid #ccc; padding: 5px; text-align: justify;">Risco tolerável. Nenhuma ação adicional imediata é necessária, devendo-se manter os controles atuais.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; background-color: #ffc107; padding: 5px; font-weight: bold; text-align: center;">Médio (5 a 9)</td>
+                <td style="border: 1px solid #ccc; padding: 5px; text-align: justify;">Ações de mitigação ou de melhoria devem ser planejadas para redução do risco num período programado.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; background-color: #fd7e14; color: white; padding: 5px; font-weight: bold; text-align: center;">Alto (10 a 16)</td>
+                <td style="border: 1px solid #ccc; padding: 5px; text-align: justify;">Medidas corretivas devem ser implementadas rapidamente. Pode-se recomendar a suspensão parcial da atividade até a adequação.</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ccc; background-color: #dc3545; color: white; padding: 5px; font-weight: bold; text-align: center;">Crítico (17 a 25)</td>
+                <td style="border: 1px solid #ccc; padding: 5px; text-align: justify;">Situação inaceitável. O trabalho não deve ser iniciado ou continuado até que o risco seja reduzido de forma efetiva (Embargo/Interdição).</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Assinatura do Inspetor -->
+    <div style="margin-top: 80px; text-align: center; page-break-inside: avoid;">
+        <div style="width: 500px; border-top: 1px solid #333; margin: 0 auto; padding-top: 10px;">
+            <p style="margin: 0; font-weight: bold; font-size: 16px;" th:text="${inspection.inspectorName}"></p>
+            <p style="margin: 0; color: #555; font-size: 14px;" th:if="${inspection.inspectorJobTitle != null and inspection.inspectorJobTitle != ''}" th:text="${inspection.inspectorJobTitle}"></p>
+            <p style="margin: 0; color: #555; font-size: 14px;" th:if="${inspection.inspectorTechnicalRegistration != null and inspection.inspectorTechnicalRegistration != ''}">
+                Registro: <span th:text="${inspection.inspectorTechnicalRegistration}"></span>
+            </p>
+        </div>
+    </div>
+
+
 
 </body>
 </html>
