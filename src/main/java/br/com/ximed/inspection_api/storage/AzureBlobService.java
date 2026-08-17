@@ -4,6 +4,7 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.models.BlobHttpHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,9 @@ public class AzureBlobService {
 
         BlobClient blobClient = containerClient.getBlobClient(blobName);
         blobClient.upload(file.getInputStream(), file.getSize(), true);
+        if (file.getContentType() != null) {
+            blobClient.setHttpHeaders(new BlobHttpHeaders().setContentType(file.getContentType()));
+        }
 
         return blobClient.getBlobUrl();
     }
@@ -40,6 +44,12 @@ public class AzureBlobService {
     public String uploadFile(byte[] data, String blobName) {
         BlobClient blobClient = containerClient.getBlobClient(blobName);
         blobClient.upload(new java.io.ByteArrayInputStream(data), data.length, true);
+        
+        String contentType = "application/octet-stream";
+        if (blobName.toLowerCase().endsWith(".html")) contentType = "text/html; charset=utf-8";
+        else if (blobName.toLowerCase().endsWith(".pdf")) contentType = "application/pdf";
+        blobClient.setHttpHeaders(new BlobHttpHeaders().setContentType(contentType));
+        
         return blobClient.getBlobUrl();
     }
 
