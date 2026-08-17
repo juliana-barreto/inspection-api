@@ -30,9 +30,13 @@ public class InspectionService {
     private final SectorRepository sectorRepository;
 
     private final InspectionMapper inspectionMapper;
+    private final br.com.ximed.inspection_api.storage.AzureBlobService azureBlobService;
 
     @Transactional
     public InspectionResponse create(InspectionRequest request) {
+
+        inspectionRepository.findFirstByStatusOrderByCreatedAtDesc(InspectionStatus.DRAFT)
+                .ifPresent(existing -> inspectionRepository.delete(existing));
 
         Site site = siteRepository.findById(request.siteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Local não encontrado"));
@@ -43,6 +47,13 @@ public class InspectionService {
         inspectionRepository.save(inspection);
 
         return inspectionMapper.toResponse(inspection);
+    }
+
+    @Transactional(readOnly = true)
+    public InspectionResponse getActiveDraft() {
+        return inspectionRepository.findFirstByStatusOrderByCreatedAtDesc(InspectionStatus.DRAFT)
+                .map(inspectionMapper::toResponse)
+                .orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -114,6 +125,17 @@ public class InspectionService {
             throw new BusinessException("Apenas locais de inspeções em rascunho podem ser excluídos.");
         }
         
+        // Exclui todas as fotos associadas aos itens desta localização do Azure
+        if (location.getItems() != null) {
+            location.getItems().forEach(item -> {
+                if (item.getEvidences() != null) {
+                    item.getEvidences().forEach(evidence -> {
+                        azureBlobService.deleteFileByUrl(evidence.getImgUrl());
+                    });
+                }
+            });
+        }
+        
         inspectionLocationRepository.delete(location);
     }
 
@@ -124,6 +146,13 @@ public class InspectionService {
                 
         if (item.getInspectionLocation().getInspection().getStatus() != InspectionStatus.DRAFT) {
             throw new BusinessException("Apenas itens de inspeções em rascunho podem ser excluídos.");
+        }
+        
+        // Exclui as fotos associadas a este item do Azure
+        if (item.getEvidences() != null) {
+            item.getEvidences().forEach(evidence -> {
+                azureBlobService.deleteFileByUrl(evidence.getImgUrl());
+            });
         }
         
         inspectionItemRepository.delete(item);
@@ -208,5 +237,26 @@ public class InspectionService {
         }
         int score = probability.getValue() * severity.getValue();
         return RiskLevel.fromScore(score);
+    }
+
+    @Transactional
+    public EvidenceResponse addEvidence(UUID inspectionId, UUID locationId, UUID itemId, MultipartFile file, String caption) throws java.io.IOException {
+        InspectionItem item = inspectionItemRepository.findByIdAndLocationIdAndInspectionId(itemId, locationId, inspectionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Item não encontrado"));
+
+        String virtualFolder = "inspections/" + inspectionId + "/items/" + itemId;
+        String fileUrl = azureBlobService.uploadFile(file, virtualFolder);
+
+        Evidence evidence = Evidence.builder()
+                .inspectionItem(item)
+                .imgUrl(fileUrl)
+                .objectKey(file.getOriginalFilename())
+                .caption(caption)
+                .build();
+
+        item.getEvidences().add(evidence);
+        inspectionItemRepository.save(item);
+
+        return new EvidenceResponse(evidence.getId(), fileUrl, caption);
     }
 }

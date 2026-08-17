@@ -40,6 +40,16 @@ public class InspectionController {
         return ResponseEntity.ok(inspectionService.findAll(siteId, status));
     }
 
+    @GetMapping("/active-draft")
+    @Operation(summary = "Obter o rascunho de inspeção ativo do usuário")
+    public ResponseEntity<InspectionResponse> getActiveDraft() {
+        InspectionResponse draft = inspectionService.getActiveDraft();
+        if (draft == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(draft);
+    }
+
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar os dados gerais do relatório de inspeção")
@@ -134,6 +144,20 @@ public class InspectionController {
 
 
 
+
+    @PostMapping(value = "/{inspectionId}/locations/{locationId}/items/{itemId}/evidences", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Adicionar uma foto/evidência a um item da inspeção")
+    public ResponseEntity<EvidenceResponse> addEvidence(
+            @PathVariable UUID inspectionId,
+            @PathVariable UUID locationId,
+            @PathVariable UUID itemId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "caption", required = false) String caption
+    ) throws java.io.IOException {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(inspectionService.addEvidence(inspectionId, locationId, itemId, file, caption));
+    }
 
     @GetMapping("/previous-nonconformities")
     @Operation(summary = "Buscar não conformidades da inspeção anterior")
